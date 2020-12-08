@@ -296,3 +296,69 @@ vm.items.splice(newLength)
    | destoryed     | 组件销毁时调用                                               |
 
 3. ![1.png](vue.assets/16ca74f183827f46)
+
+
+
+#### vue父子组件生命周期钩子执行顺序
+
+- 加载渲染过程
+
+  ````
+  父-beforeCreate -> 父-created -> 父-beforeMount -> 子-beforeCreate -> 子-created -> 子-beforeMount -> 子-mounted -> 父-mounted
+  ````
+
+- 父组件更新
+
+  ````
+  父-beforeUpdate -> 父-updated
+  ````
+
+- 子组件更新
+
+  ````
+  父-beforeUpdate -> 子-beforeUpdate -> 子-updated -> 父-updated
+  ````
+
+- 销毁过程
+
+  `````
+  父-beforeDestory -> 子-beforeDestory -> 子destoryed -> 父destoryed
+  `````
+
+#### 父组件监听子组件的生命周期
+
+如果想在父组件想在子组件的mounted做点事情
+
+```
+//父组件
+<child @mounted="doSomthing"></child>
+methods: {
+    doSomthing(){}
+}
+
+//子组件
+mounted(){
+    this.$emit('mounted')
+}
+```
+
+使用`hook` 省去子组件的emit
+
+```
+//父组件
+<child @hook:mounted="doSomthing"></child>
+methods: {
+    doSomthing(){}
+}
+```
+
+在任意地方使用`Vue.$on/$once('hook:生命周期'， callback)`可以监听生命周期
+
+#### vue-router的路由模式有几种？
+
+- history
+- hash
+- abstract 在js运行环境中转为abstract
+
+#### vue是如何实现双向绑定的
+
