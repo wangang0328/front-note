@@ -189,6 +189,42 @@
 1. 缺点 代码引用不明确，不利于维护
 2. 方法名，变量名容易冲突
 
+### 自定义指令
+
+除了`v-model` `v-show`等内置指令外， vue也可以注册自定义指令。一般用于对普通DOM元素进行底层操作， 如： 自动获取输入框的焦点(autofocus 在移动版safari不工作)，可以自定义指令实现
+
+````
+//全局注册
+Vue.directive('focus', {
+ //当被绑定的元素插入到DOM中时
+ inserted: function(el){
+ 	//聚焦元素
+ 	el.focus()
+ }
+})
+//也可以局部注册
+directives: {
+  focus: {
+  	//指令的定义
+  	inserted: function(el){
+  		el.focus()
+  	}
+  }
+}
+//使用
+<input v-focus>
+````
+
+**钩子函数**
+
+- bind: 只掉用一次，指令第一次绑定到元素时调用。在这里可以进行一次性的初始化设置
+- inserted: 被绑定元素插入父节点时调用（仅保证父节点存在，但不一定已被插入文档中）
+- update: 所在组件的VNode更新时调用，看可能发生在其子VNode更新之前。指令的值可能发生改变，也可能没有。是你可以通过比较更新前后的值来忽略不必要的模板更新
+- componentUpdated: 指令所在组件的 VNode **及其子 VNode** 全部更新后调用
+- unbind: 只调用一次，指令与元素解绑时调用
+
+指令函数能够接受所有合法的 JavaScript 表达式。
+
 ## 复习的知识点
 
 ### MVVM
@@ -259,4 +295,4 @@ vm.items.splice(newLength)
    | beforeDestory | 组件古北销毁前调用（可以初始化一些数据，防止内存泄漏）       |
    | destoryed     | 组件销毁时调用                                               |
 
-   
+3. ![1.png](vue.assets/16ca74f183827f46)
