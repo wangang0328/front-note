@@ -362,3 +362,16 @@ methods: {
 
 #### vue是如何实现双向绑定的
 
+以下解释不是最新的,   `proxy`  `Object.defineProperty`
+
+vue 内部通过`Object.defineProperty` 方法属性拦截方式，把data对象里的每个数据的读写转化成`getter/setter` , 当数据变化时通知更新视图。
+
+vue中通过以下4个步奏实现
+
+- `Observer`监听器，用来劫持并监听所有属性，如果发生变化，就通知所有订阅者
+- `Dep`实现观察-订阅模式，用来收集订阅者，当数据变化时，执行订阅者更新函数。对监听器`observer`和订阅者`watcher`进行统一管理
+- `Watcher`实现一个订阅值，可以收到属性变化的通知，并执行相应的方法，从而更新视图
+- `Compile` 解析template模板上面每个节点的指令，对模板数据和订阅去进行初始化
+
+
+
