@@ -744,6 +744,21 @@ function deepClone(target){
 
 ### 数字格式化(三个中间加"，")
 
+````javascript
+function formatNumber(a:number){
+    const list = a.toString().split('.')
+    let x1 = list[0]
+    let x2 = list[1] ? '.' + list[1] : ''
+    const reg = /(\d+)(\d{3})/
+    while(reg.test(x1)){
+        x1 = x1.replace(reg, '$1' + ',' + '$2')
+    }
+    return x1 + x2
+}
+````
+
+
+
 ### 数字递增动画`window.requestAnimationFrame()`
 
 
