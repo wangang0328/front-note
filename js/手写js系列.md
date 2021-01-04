@@ -225,16 +225,53 @@ Array.prototype.forEachArr = function(callback, thisArg){
 
 ```javascript
 Function.prototype.call = function(context = window, ...args){
+    //没有传入对象则绑定到window上
    if(typeof this !== 'function'){
         throw new TypeError('type error')
     }
     const fn = Symbol('fn')
-    context[fn] = this 
+    context[fn] = this //把函数赋值到对象的某个属性
     const res = context[fn](...args)
     delete context[fn]
     return res
 }
 ```
+
+- apply
+
+```javascript
+Function.prototype.apply = function(context = window, args){
+	//没有传入对象则绑定到window上
+	if(typeof this !== 'function'){
+       throw new TypeError('type error')
+    }
+    const fn = Symbol(this)
+    context[fn] = this 
+    const res = context[fn](...args) 
+    delete context[fn]
+    return res
+}
+```
+
+- bind
+
+````javascript
+Function.prototype.bind = function(context,  ...args){
+    if(typeof this !== 'function'){
+       throw new Error('type error')
+    }
+    //保存this的值
+    let self = this
+    return function F(){
+        //考虑new的情况
+        if(this instanceof F){
+            return new self(...args, ...arguments)
+        }
+        
+        return self.apply(context, [...args, ...arguments])
+    }
+}
+````
 
 
 
@@ -682,11 +719,45 @@ function add(...args){
 
 ### 模拟new操作
 
+````javascript
+function Student(name,age){
+    this.name=name
+    this.age=age
+}
+
+let first=new Student('dylan','26')
+console.log(first.name);// dylan
+console.log(first.age);// 26
+````
+
+new 实现的功能：
+
+1. 创建一个空对象
+2. 空对象的原型  `__proto__`  指向构造函数的 原型 `prototype`
+3. 让this指向新创建的空对象，并且执行对象的主体(为这个新对象添加属性)
+4. 判断返回值的类型，如果是值类型就返回创建的对象，如果是引用类型，就返回这个引用类型的对象
+5. 如果函数没有返回对象类型Object(包括Function，Array, Date, RegExg, Error), 那么new表达式中的函数调用将返回该对象的引用
+
+```javascript
+function newOperator(ctor, ...args){
+    if(typeof ctor !== 'function'){
+       throw new TypeError('Type Error')
+    }
+    const obj = Object.create(ctor.prototype)
+    const res = ctor.apply(obj, args)
+    const isObject = typeof res === 'object' && res !== null
+    const isFunction = typeof res === 'function'
+    return isObject || isFunction ? res : obj
+}
+```
+
+
+
 ### `instanceof`
 
 `instanceof`运算符用于检测构造函数的`prototype`属性是否出现在某个实例对象的原型链上
 
-```
+```javascript
 function myInstanceof(instance, origin){
             //基本类型全部返回false
             if(typeof instance !== 'object' || instance === null){
@@ -709,9 +780,71 @@ function myInstanceof(instance, origin){
 
 ### 原型继承
 
+寄生组合继承
+
+```javascript
+function Parent(){
+	this.name = 'parent'
+}
+function Child() {
+	Parent.call(this)
+	this.type = 'children'
+}
+Child.prototype = Object.create(Parent.prototype)
+Child.prototype.constructor = Child
+```
+
+
+
 ### `Object.is`
 
+解决一下问题
+
+````
++0 === -0 // true
+NaN === NaN //false
+````
+
+````javascript
+function is = (x, y) => {
+	if(x === y){
+		return x !== 0 || y !== 0 || 1/x !== 1/y
+	}else{
+		return x !== x && y !== y
+	}
+}
+````
+
 ### `Object.assign`
+
+`Object.assign()`方法用于将所有可枚举属性的值从一个或多个源对象复制到目标对象。它将返回目标对象 (浅拷贝)
+
+```javascript
+Object.defineProperty(Object, 'assign', {
+    value: function(target, ...args){
+        if(target === null){
+           return new TypeError('Cannot convert undefined or null to object')
+        }
+        //目标对象需要统一是引用数据类型， 若不是，会自动转换
+        const to = Object(target)
+        
+        for (let i = 0; i < args.length; i++) {
+            //每一个源对象
+            const nextSource = args[i]
+            if(nextSource !== null){
+               for(const nextKey in nextSource){
+                   if(Object.hasOwnProperty.call(nextSource, nextKey)){
+                      to[nextKey] = nextSource[nextKey]
+                   }
+               }
+            }
+        }
+        return to
+    }
+})
+```
+
+
 
 ### 深拷贝
 
@@ -726,7 +859,11 @@ function deepClone(target){
            clone[key] = target[key]
          }
     }
-    return clone
+    return clone,
+    //不可枚举
+    enumerable: false,
+    writable: true,
+    configurable: true
 }
 ````
 

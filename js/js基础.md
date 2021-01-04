@@ -117,4 +117,25 @@ AMD 和 CMD 最大的区别是对依赖模块的执行时机处理不同，注�
 - `CommonJS` 输出是值的拷贝；`ES6 Modules` 输出的是值的引用，被输出模块的内部的改变会影响引用的改变
 - `CommonJs` 导入的模块路径可以是一个表达式，因为它使用的是`require()` 方法；而 `ES6 Modules` 只能是字符串
 - `CommonJS this` 指向当前模块，`ES6 Modules` 的 `this` 指向 `undefined`
-- `ES6 Modules` 中没有这些顶层变量：`arguments`、`require`、`module`、`exports`、`__filename`、`__dirname`
+
+  `ES6 Modules` 中没有这些顶层变量：`arguments`、`require`、`module`、`exports`、`__filename`、`__dirname`
+## 一些面试题
+
+### 下面代码输出？
+
+````
+function getPersonInfo(one, two, three) {
+  console.log(one);
+  console.log(two);
+  console.log(three);
+}
+
+const person = "Lydia";
+const age = 21;
+
+getPersonInfo`${person} is ${age} years old`;
+
+//["", "is", "years old"] Lydia 21
+````
+
+如果使用标记的模板字符串，则第一个参数的值始终是字符串值的数组。 其余参数获取传递到模板字符串中的表达式的值！
