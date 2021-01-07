@@ -859,11 +859,7 @@ function deepClone(target){
            clone[key] = target[key]
          }
     }
-    return clone,
-    //不可枚举
-    enumerable: false,
-    writable: true,
-    configurable: true
+    return clone
 }
 ````
 
