@@ -122,5 +122,70 @@ var() // 1
 
 在js中，实现外部作用域访问内部作用域中变量的方法叫做闭包
 
+### 八种方式实现继承
+
+1. 原型链方式
+
+过多的继承了没用的属性
+
+   ````javascript
+ //原型链继承
+function Grand(){}
+Grand.prototype.name = 'fathger'  
+const grand = new Grand()
+function Father(){
+    this.age = 15
+}
+Father.prototype = grand
+const father = new Father()
+console.log(father.name, father.age, father)
+   ````
+
+2. 借用构造函数继承（类式继承）
+
+有点：可以传参
+
+缺点：不能继承借用构造函数的原型
+
+​           每次构造函数都要多走一个函数
+
+````javascript
+function Student(name, age){
+    this.name = name
+    this.age = age
+}
+function Teacher(name, age, id){
+    Student.call(this, name, age)
+    this.id = id
+}
+const teacher = new Teacher('wa', 18, '100')
+console.log(teacher)
+````
+
+3. 组合式继承(通俗来讲就是用原型链实现对原型属性和方法的继承 用借用构造函数来实现对实例属性的继承)
+
+优点： 避免了原型链和构造函数的缺点，在js中比较常用
+
+缺点： 实例和原型上存在两份相同的属性
+
+````javascript
+function Parent(){
+	this.name = 'parent'
+}
+
+Parent.prototype.sayName = function(){
+	console.log(this.name)
+}
+
+function Child(){
+    this.sayHello = 'hello'
+    Parent.apply(this, [])
+}
+Child.prototype = new Parent()
+Child.prototype.constructor = Child
+let child  = new Child()
+console.log(child, child.sayName)
+````
+
 ### 说说js的垃圾回收(GC)
 
