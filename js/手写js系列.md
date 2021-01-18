@@ -894,6 +894,15 @@ function formatNumber(a:number){
 
 ### 数字递增动画`window.requestAnimationFrame()`
 
+### 获取格林威治时间的时间戳
+
+````
+const curTime = new Date()
+//与格林尼治时间差
+const offset = curTime.getTimezoneOffset()
+let stampGTM = gime.getTime() + offset * 60 * 1000
+````
+
 
 
 
